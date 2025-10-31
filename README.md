@@ -24,7 +24,7 @@ az --version
 ## 🔐 2. Login to Azure
 
 ```bash
-az login
+az login --use-device-code
 ```
 
 ---
