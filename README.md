@@ -101,13 +101,13 @@ AGIC_CLIENT_ID=$(az aks show \
   --name myAksCluster \
   --query "addonProfiles.ingressApplicationGateway.identity.clientId" -o tsv)
 
-# List role assignments for AGIC on the Application Gateway
-az role assignment list \
-  --assignee $AGIC_CLIENT_ID \
-  --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/$NODE_RG/providers/Microsoft.Network/applicationGateways/$APPGW_NAME \
-  --query "[].roleDefinitionName" -o tsv
+# Get the node resource group for your AKS cluster
+NODE_RG=$(az aks show -g myResourceGroup -n myAksCluster --query "nodeResourceGroup" -o tsv)
 
-# If the Network Contributor role is missing, assign it
+# Get the name of the Application Gateway in that resource group
+APPGW_NAME=$(az network application-gateway list -g $NODE_RG --query "[0].name" -o tsv)
+
+# Assign Network Contributor role 
 az role assignment create \
   --assignee $AGIC_CLIENT_ID \
   --role "Contributor" \
