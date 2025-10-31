@@ -40,6 +40,6 @@ spec:
   selector:
     app: game-2048
   ports:
-    - port: 80        # Exposed port for ingress
-      targetPort: 5000 # Container port
+    - port: 80          # Exposed port for Ingress
+      targetPort: 5000  # Container port
   type: ClusterIP
