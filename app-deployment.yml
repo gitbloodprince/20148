@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: game-2048-container
-          image: mitchisalive/2048-web:latest
+          image: mitchisalive/2048-multiarch:latest
           ports:
             - containerPort: 5000
           resources:
