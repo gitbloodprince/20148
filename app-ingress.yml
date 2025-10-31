@@ -11,7 +11,7 @@ metadata:
 spec:
   ingressClassName: azure-application-gateway
   rules:
-    - host: ""  # empty = default host
+    - host: ""  # default host
       http:
         paths:
           - path: /
