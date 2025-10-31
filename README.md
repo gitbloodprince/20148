@@ -67,7 +67,13 @@ kubectl get nodes
 ## 🌐 6. Enable Application Gateway Ingress Controller (AGIC)
 
 ```bash
+# Get the node resource group for your AKS cluster
 NODE_RG=$(az aks show -g myResourceGroup -n myAksCluster --query "nodeResourceGroup" -o tsv)
+
+# Get the name of the Application Gateway in that resource group
+APPGW_NAME=$(az network application-gateway list -g $NODE_RG --query "[0].name" -o tsv)
+
+# Get the VNet name
 VNET_NAME=$(az network vnet list -g $NODE_RG --query "[0].name" -o tsv)
 
 # Get the subnet ID for aks-appgateway
@@ -84,10 +90,29 @@ az aks enable-addons \
   --name myAksCluster \
   --appgw-subnet-id $SUBNET_ID
 
-```
-Refer: Verify the AGIC pod:
-```bash
+# Check that the AGIC pod is running
 kubectl get pods -n kube-system | grep appgw
+
+⚠️ Verify AGIC Identity Role Assignment
+
+# Get AGIC client ID
+AGIC_CLIENT_ID=$(az aks show \
+  --resource-group myResourceGroup \
+  --name myAksCluster \
+  --query "addonProfiles.ingressApplicationGateway.identity.clientId" -o tsv)
+
+# List role assignments for AGIC on the Application Gateway
+az role assignment list \
+  --assignee $AGIC_CLIENT_ID \
+  --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/$NODE_RG/providers/Microsoft.Network/applicationGateways/$APPGW_NAME \
+  --query "[].roleDefinitionName" -o tsv
+
+# If the Network Contributor role is missing, assign it
+az role assignment create \
+  --assignee $AGIC_CLIENT_ID \
+  --role "Contributor" \
+  --scope /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/$NODE_RG/providers/Microsoft.Network/applicationGateways/$APPGW_NAME
+
 ```
 
 ---
