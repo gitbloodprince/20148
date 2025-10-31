@@ -99,33 +99,22 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 ```
 ---
-
-## 🌐 6. Enable Application Gateway Ingress Controller (AGIC)
+## 🧭 8. Install ArgoCD with Helm
 
 ```bash
-NODE_RG=$(az aks show -g myResourceGroup -n myAksCluster --query "nodeResourceGroup" -o tsv)
-VNET_NAME=$(az network vnet list -g $NODE_RG --query "[0].name" -o tsv)
+kubectl create namespace argocd
 
-# Get the subnet ID for aks-appgateway
-SUBNET_ID=$(az network vnet subnet show \
-  --resource-group $NODE_RG \
-  --vnet-name $VNET_NAME \
-  --name aks-appgateway \
-  --query "id" -o tsv)
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
 
-# Enable AGIC using the existing subnet
-az aks enable-addons \
-  --addons ingress-appgw \
-  --resource-group myResourceGroup \
-  --name myAksCluster \
-  --appgw-subnet-id $SUBNET_ID
-
+helm install argocd argo/argo-cd --namespace argocd
 ```
 Expose ArgoCD server externally:
 ```bash
 kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"LoadBalancer"}}'
 kubectl get svc -n argocd
 ```
+
 ---
 
 ## 🔑 9. Get ArgoCD Admin Password
@@ -150,7 +139,7 @@ Apply manifests manually (optional — ArgoCD will sync automatically):
 kubectl apply -f app-deployment.yml
 kubectl apply -f app-ingress.yml
 ```
-Apply manifests manually (optional — ArgoCD will sync automatically):
+Check deployment::
 ```bash
 kubectl get pods -n store-ns
 kubectl get svc -n store-ns
@@ -168,6 +157,7 @@ Visit:
 http://<EXTERNAL-IP>
 ```
 Optional: If you have a domain, create an A record pointing to the external IP.
+
 ---
 
 ## 12. Cleanup Resources
