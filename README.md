@@ -168,4 +168,14 @@ Visit:
 http://<EXTERNAL-IP>
 ```
 Optional: If you have a domain, create an A record pointing to the external IP.
+---
+
+## 12. Cleanup Resources
+
+```bash
+kubectl delete -f app-deployment.yml
+kubectl delete -f app-ingress.yml
+az aks delete -g 20148-argoCD -n myAksCluster --yes --no-wait
+az group delete -n 20148-argoCD --yes --no-wait
+```
 
