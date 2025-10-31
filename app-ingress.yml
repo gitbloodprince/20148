@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: store-ns-ingress
+  namespace: store-ns
+  annotations:
+    appgw.ingress.kubernetes.io/use-private-ip: "false"
+    appgw.ingress.kubernetes.io/backend-path-prefix: "/"
+    # Uncomment if you want HTTPS redirect
+    # appgw.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: azure-application-gateway
+  rules:
+    - host: ""  # Optional: set your custom domain here
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: game-2048-service
+                port:
+                  number: 5000
+
