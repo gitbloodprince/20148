@@ -102,7 +102,7 @@ AGIC_CLIENT_ID=$(az aks show \
   --query "addonProfiles.ingressApplicationGateway.identity.clientId" -o tsv)
 
 # Get the node resource group for your AKS cluster
-NODE_RG=$(az aks show -g myResourceGroup -n myAksCluster --query "nodeResourceGroup" -o tsv)
+NODE_RG=$(az aks show -g <your-rg-name> -n <your-aks-cluster-name> --query "nodeResourceGroup" -o tsv)
 
 # Get the name of the Application Gateway in that resource group
 APPGW_NAME=$(az network application-gateway list -g $NODE_RG --query "[0].name" -o tsv)
